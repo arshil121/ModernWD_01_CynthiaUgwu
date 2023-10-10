@@ -10,9 +10,11 @@ const minicircle = document.querySelector("#minicircle");
 
 // Function for attaching the white circle with mouse
 function circleMouseFollower(xscale, yscale) {
-  if (minicircle) {
-    minicircle.style.transform = `translate(${event.clientX}px, ${event.clientY}px) scale(${xscale}, ${yscale})`;
-  }
+  window.addEventListener("mousemove", function (dets) {
+    document.querySelector(
+      "#minicircle"
+    ).style.transform = `translate(${dets.clientX}px, ${dets.clientY}px) scale(${xscale}, ${yscale})`;
+  });
 }
 
 // Function for making the circle skew while moving the mouse
@@ -38,7 +40,7 @@ function skewMaker() {
       if (minicircle) {
         minicircle.style.transform = `translate(${event.clientX}px, ${event.clientY}px) scale(1, 1)`;
       }
-    }, 100);
+    }, 50);
   });
 }
 
@@ -46,8 +48,6 @@ function skewMaker() {
 function clamp(min, max, value) {
   return Math.min(Math.max(value, min), max);
 }
-
-
 
 //Function to add animation to nav and h5-h1
 function firstPageAnim() {
@@ -78,7 +78,33 @@ function firstPageAnim() {
 // Use hardware-accelerated properties for smoother animations
 gsap.set(".boundingelem", { transformOrigin: "center center" });
 
+//Show images in elem based on mouse hover
+document.querySelectorAll(".elem").forEach(function (elem) {
+  var rotate = 0;
+  var diffrot = 0;
+
+  elem.addEventListener("mouseleave", function (dets) {
+    gsap.to(elem.querySelector("img"), {
+      opacity: 0,
+      ease: Power3,
+      duration: 0.5,
+    });
+  });
+
+  elem.addEventListener("mousemove", function (dets) {
+    var diff = dets.clientY - elem.getBoundingClientRect().top;
+    diffrot = dets.clientX - rotate;
+    rotate = dets.clientX;
+    gsap.to(elem.querySelector("img"), {
+      opacity: 1,
+      ease: Power3,
+      top: diff,
+      left: dets.clientX,
+      rotate: gsap.utils.clamp(-20, 20, diffrot * 0.8),
+    });
+  });
+});
+
 firstPageAnim();
 skewMaker();
 circleMouseFollower();
-
